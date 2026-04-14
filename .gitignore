@@ -1,0 +1,9 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+client_secret_419852875160-jctjhj96gjfejc5k0g9igrkllv5v1hcb.apps.googleusercontent.com.json
