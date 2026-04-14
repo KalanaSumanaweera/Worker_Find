@@ -81,7 +81,7 @@ export default function AdminProfile() {
             <main className="pt-32 pb-24 px-6 md:px-20 max-w-[1000px] mx-auto">
                 <div className="mb-12">
                     <h1 className="text-4xl font-extrabold text-teal-950 mb-3 tracking-tight">Register New Professional</h1>
-                    <p className="text-slate-500 font-medium text-lg">Add high-quality artisans to the Artisan Lanka directory.</p>
+                    <p className="text-slate-500 font-medium text-lg">Add high-quality artisans to the Worker Find directory.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">

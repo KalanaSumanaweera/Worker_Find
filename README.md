@@ -1,15 +1,14 @@
-# Artisans Lanka — Artisan Marketplace
+# Worker Find — Professional Artisan Marketplace
 
-Artisans Lanka is a premium, two-sided marketplace designed to connect skilled Sri Lankan artisans (Providers) with service seekers (Seekers). The platform features high-fidelity glassmorphic design, robust role-based authentication, and a centralized administrative moderation workflow.
+Worker Find is a premium, two-sided marketplace designed to connect skilled Sri Lankan professionals (Providers) with service seekers (Seekers). The platform features high-fidelity glassmorphic design, robust role-based authentication, and a centralized administrative moderation workflow.
 
-![Banner](https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6)
 
 ## 🚀 Features
 
 ### For Service Seekers
-- **Find Skilled Artisans**: Browse a curated directory of professionals with ratings and reviews.
+- **Find Skilled Professionals**: Browse a curated directory of experts with ratings and reviews.
 - **Post Needs**: Create job requests detailing the required service, location, and budget.
-- **Track Responses**: View professional proposals from artisans directly in your dashboard.
+- **Track Responses**: View professional proposals from workers directly in your dashboard.
 
 ### For Professional Artisans
 - **Create a Profile**: Showcase your services, experience, and pricing.

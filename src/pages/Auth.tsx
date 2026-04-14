@@ -89,7 +89,7 @@ export default function Auth() {
                                 <ShieldCheck className="text-white w-8 h-8" />
                             </div>
                             <h1 className="text-3xl font-bold text-teal-950 mb-2 font-['Plus_Jakarta_Sans']">
-                                {isLogin ? 'Welcome Back' : 'Join Artisan Lanka'}
+                                {isLogin ? 'Welcome Back' : 'Join Worker Find'}
                             </h1>
                             <p className="text-slate-500">
                                 {isLogin ? 'Enter your details to access your account' : 'Create an account to start your journey'}
