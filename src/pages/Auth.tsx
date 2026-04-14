@@ -82,7 +82,7 @@ export default function Auth() {
                     animate={{ opacity: 1, y: 0 }}
                     className="w-full max-w-md"
                 >
-                    <div className="glass-card p-8 rounded-[2.5rem] border border-teal-500/10 shadow-2xl relative overflow-hidden">
+                    <div className="glass-card p-6 md:p-10 rounded-[2.5rem] border border-teal-500/10 shadow-2xl relative overflow-hidden">
                         {/* Header */}
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-600/20">

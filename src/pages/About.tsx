@@ -9,18 +9,18 @@ export default function About() {
         <section className="px-4 md:px-20 max-w-7xl mx-auto mb-16 md:mb-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold text-teal-950 mb-6 md:mb-8">Preserving Craft, Empowering People.</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-teal-950 mb-6 md:mb-8 font-['Plus_Jakarta_Sans']">Preserving Craft, Empowering People.</h1>
               <p className="text-lg md:text-xl text-slate-600 leading-relaxed mb-4 md:mb-6">
-                ArtisanLanka was born out of a simple need: to bridge the gap between Sri Lanka's incredible local talent and the modern digital world.
+                Worker Find was born out of a simple need: to bridge the gap between Sri Lanka's incredible local talent and the modern digital world.
               </p>
               <p className="text-lg md:text-xl text-slate-600 leading-relaxed">
                 Our mission is to empower local artisans—from traditional woodcarvers to modern electricians—by providing them with a platform to showcase their skills and connect with customers across the island.
               </p>
             </div>
             <div className="relative">
-              <img 
-                src="https://picsum.photos/seed/artisan-work/800/600" 
-                alt="Artisan working" 
+              <img
+                src="https://picsum.photos/seed/artisan-work/800/600"
+                alt="Artisan working"
                 className="rounded-3xl md:rounded-[40px] shadow-2xl"
                 referrerPolicy="no-referrer"
               />

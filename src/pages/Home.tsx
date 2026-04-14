@@ -231,26 +231,28 @@ export default function Home() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-teal-50/50 to-transparent opacity-60 blur-3xl -z-10" />
           </div>
 
-          {/* Orbital Categories */}
-          {categories.map((cat, i) => (
-            <FloatingCategory
-              key={cat.id || cat.name}
-              name={cat.name}
-              slug={cat.slug}
-              icon={cat.icon}
-              initialPos={cat.pos}
-              delay={i}
-              activeHoverId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
+          {/* Orbital Categories — Desktop Only */}
+          <div className="hidden md:block">
+            {categories.map((cat, i) => (
+              <FloatingCategory
+                key={cat.id || cat.name}
+                name={cat.name}
+                slug={cat.slug}
+                icon={cat.icon}
+                initialPos={cat.pos}
+                delay={i}
+                activeHoverId={hoveredId}
+                onHover={setHoveredId}
+              />
+            ))}
+          </div>
 
           <div className="max-w-4xl space-y-6 relative z-30">
             <motion.h1
               initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="text-5xl md:text-6xl font-bold font-['Plus_Jakarta_Sans'] text-teal-950 tracking-tight leading-[1.05]"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold font-['Plus_Jakarta_Sans'] text-teal-950 tracking-tight leading-[1.1] md:leading-[1.05]"
             >
               {t('hero_title')}
             </motion.h1>
@@ -258,7 +260,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30, filter: "blur(5px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed"
+              className="text-base sm:text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-4 md:px-0"
             >
               {t('hero_subtitle')}
             </motion.p>
@@ -270,23 +272,23 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
               onMouseEnter={() => setHoveredId('search')}
               onMouseLeave={() => setHoveredId(null)}
-              className="mt-8 md:mt-12 p-3 bg-white/70 backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-full shadow-[0_20px_50px_rgba(13,148,136,0.15)] max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-2 group hover:shadow-[0_20px_70px_rgba(13,148,136,0.25)] transition-all duration-500"
+              className="mt-8 md:mt-12 p-3 bg-white/70 backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-full shadow-[0_20px_50px_rgba(13,148,136,0.15)] max-w-4xl mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 group hover:shadow-[0_20px_70px_rgba(13,148,136,0.25)] transition-all duration-500 mx-4"
             >
-              <div className="flex-1 w-full relative">
+              <div className="flex-1 relative">
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-8 py-4 bg-transparent focus:ring-0 text-lg placeholder:text-slate-400 rounded-full"
+                  className="w-full px-6 py-4 bg-transparent focus:ring-0 text-base md:text-lg placeholder:text-slate-400 rounded-full"
                   placeholder={t('search_placeholder')}
                 />
               </div>
               <div className="hidden md:block w-px h-8 bg-slate-200" />
-              <div className="flex-1 w-full relative">
-                <input className="w-full px-8 py-4 bg-transparent focus:ring-0 text-lg placeholder:text-slate-400 rounded-full" placeholder={t('location_placeholder')} />
+              <div className="flex-1 relative">
+                <input className="w-full px-6 py-4 bg-transparent focus:ring-0 text-base md:text-lg placeholder:text-slate-400 rounded-full" placeholder={t('location_placeholder')} />
               </div>
               <button
                 type="submit"
-                className="glass-button w-full md:w-auto !text-lg !px-12 !py-4 !rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="glass-button w-full md:w-auto !text-lg !px-12 !py-4 !rounded-xl md:!rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
               >
                 {t('search')}
               </button>
@@ -331,6 +333,20 @@ export default function Home() {
                 </Link>
               </motion.div>
             </div>
+
+            {/* Mobile Category Chips */}
+            <div className="flex md:hidden gap-3 overflow-x-auto pb-4 mt-12 scrollbar-none snap-x px-4">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id || cat.name}
+                  to={`/discover?c=${cat.slug}`}
+                  className="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-full text-sm font-bold text-teal-800 shadow-sm snap-start"
+                >
+                  <span className="material-symbols-outlined text-teal-600 text-lg">{cat.icon}</span>
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -344,7 +360,8 @@ export default function Home() {
             <p className="text-slate-600 text-lg">See why thousands trust our verified professionals.</p>
           </div>
 
-          <div className="relative h-[600px] max-w-7xl mx-auto">
+          {/* Testimonials Grid — Desktop Only */}
+          <div className="hidden md:block relative h-[600px] max-w-7xl mx-auto">
             {reviews.map((rev, i) => (
               <FloatingReview
                 key={rev.author}
@@ -354,6 +371,35 @@ export default function Home() {
                 initialPos={rev.pos}
                 delay={i}
               />
+            ))}
+          </div>
+
+          {/* Testimonials Grid — Mobile Only */}
+          <div className="md:hidden grid grid-cols-1 gap-6 px-4">
+            {reviews.map((rev) => (
+              <motion.div
+                key={rev.author}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-xl"
+              >
+                <div className="flex gap-1 mb-4 text-amber-500">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} className={i < Math.floor(rev.rating) ? "fill-amber-500" : "text-slate-100"} />
+                  ))}
+                </div>
+                <p className="text-slate-700 font-medium italic mb-6 leading-relaxed">&ldquo;{rev.text}&rdquo;</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center text-white font-black text-base">
+                    {rev.author[0]}
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-bold text-teal-950 text-sm">{rev.author}</h4>
+                    <p className="text-teal-600/70 text-xs font-semibold">Verified Client</p>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
 

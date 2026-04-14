@@ -66,10 +66,10 @@ export default function AdminDashboard() {
                         <h1 className="text-3xl font-bold text-teal-950 font-['Plus_Jakarta_Sans'] mb-2">Platform Overview</h1>
                         <p className="text-slate-500">Welcome back, Admin. Here's what's happening today.</p>
                     </div>
-                    <div className="flex bg-white p-1 rounded-2xl shadow-sm border border-slate-100">
-                        <button className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20">Last 24h</button>
-                        <button className="px-4 py-2 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">7 days</button>
-                        <button className="px-4 py-2 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors">30 days</button>
+                    <div className="flex bg-white p-1 rounded-2xl shadow-sm border border-slate-100 overflow-x-auto scrollbar-none max-w-full">
+                        <button className="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-teal-600/20 whitespace-nowrap">Last 24h</button>
+                        <button className="px-4 py-2 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors whitespace-nowrap">7 days</button>
+                        <button className="px-4 py-2 text-slate-500 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors whitespace-nowrap">30 days</button>
                     </div>
                 </div>
 
@@ -159,20 +159,22 @@ export default function AdminDashboard() {
 
 function ActionCard({ title, desc, count, to, icon: Icon }: any) {
     return (
-        <Link to={to} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 group">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-teal-600 transition-all shadow-sm">
+        <Link to={to} className="flex items-start sm:items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 group">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-teal-600 transition-all shadow-sm shrink-0">
                 <Icon size={20} />
             </div>
             <div className="flex-1">
-                <h4 className="font-bold text-teal-950">{title}</h4>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h4 className="font-bold text-teal-950">{title}</h4>
+                    {count !== undefined && count > 0 && (
+                        <span className="bg-amber-100 text-amber-700 text-[10px] font-black px-2.5 py-1 rounded-lg w-fit">
+                            {count} PENDING
+                        </span>
+                    )}
+                </div>
                 <p className="text-xs text-slate-500">{desc}</p>
             </div>
-            {count !== undefined && count > 0 && (
-                <span className="bg-amber-100 text-amber-700 text-xs font-black px-2.5 py-1 rounded-lg">
-                    {count} PENDING
-                </span>
-            )}
-            <ArrowRight size={18} className="text-slate-300 group-hover:text-teal-600 group-hover:translate-x-1 transition-all" />
+            <ArrowRight size={18} className="text-slate-300 group-hover:text-teal-600 group-hover:translate-x-1 transition-all mt-1 sm:mt-0" />
         </Link>
     );
 }

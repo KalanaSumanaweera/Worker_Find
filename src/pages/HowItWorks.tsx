@@ -26,7 +26,7 @@ export default function HowItWorks() {
       <Navbar />
       <main className="pt-24 md:pt-32 pb-16 md:pb-24">
         <section className="px-4 md:px-20 max-w-7xl mx-auto text-center mb-12 md:mb-20">
-          <h1 className="text-3xl md:text-5xl font-bold text-teal-950 mb-4 md:mb-6">How ArtisanLanka Works</h1>
+          <h1 className="text-3xl md:text-5xl font-bold text-teal-950 mb-4 md:mb-6 font-['Plus_Jakarta_Sans']">How Worker Find Works</h1>
           <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
             Connecting Sri Lanka's finest artisans with people who value quality craftsmanship.
           </p>

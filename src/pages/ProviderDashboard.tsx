@@ -114,33 +114,34 @@ export default function ProviderDashboard() {
                                 <motion.div
                                     key={post.id}
                                     initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
                                     className={`p-6 bg-white rounded-[2.5rem] border transition-all cursor-pointer group ${selectedPost?.id === post.id ? 'border-teal-500 ring-4 ring-teal-500/5' : 'border-slate-100 hover:border-teal-200 hover:shadow-md'
                                         }`}
                                     onClick={() => setSelectedPost(post)}
                                 >
                                     <div className="flex items-start justify-between gap-4 mb-4">
-                                        <div>
+                                        <div className="flex-1">
                                             <span className="bg-teal-50 text-teal-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest mb-2 inline-block">
                                                 {post.category_name}
                                             </span>
-                                            <h3 className="text-xl font-bold text-teal-950 font-['Plus_Jakarta_Sans'] group-hover:text-teal-600 transition-colors">{post.title}</h3>
+                                            <h3 className="text-lg md:text-xl font-bold text-teal-950 font-['Plus_Jakarta_Sans'] group-hover:text-teal-600 transition-colors line-clamp-2 md:line-clamp-none">{post.title}</h3>
                                         </div>
                                         {post.budget && (
-                                            <div className="text-right">
+                                            <div className="text-right shrink-0">
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Budget</p>
-                                                <p className="text-lg font-black text-teal-600">Rs. {post.budget.toLocaleString()}</p>
+                                                <p className="text-base md:text-lg font-black text-teal-600">Rs. {post.budget.toLocaleString()}</p>
                                             </div>
                                         )}
                                     </div>
                                     <p className="text-slate-600 text-sm line-clamp-2 mb-6">{post.description}</p>
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-50 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                        <div className="flex items-center gap-4">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t border-slate-50 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest gap-4">
+                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                                             <span className="flex items-center gap-1.5"><MapPin size={14} className="text-teal-600" /> {post.city}</span>
                                             <span className="flex items-center gap-1.5"><Clock size={14} className="text-teal-600" /> {new Date(post.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <span className="text-teal-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                            Details <Send size={12} />
+                                        <span className="text-teal-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform ml-auto sm:ml-0">
+                                            Quick Offer <Send size={12} />
                                         </span>
                                     </div>
                                 </motion.div>
@@ -148,63 +149,76 @@ export default function ProviderDashboard() {
                         )}
                     </div>
 
-                    {/* Response Panel */}
+                    {/* Response Panel — Desktop Sidebar / Mobile Bottom Sheet */}
                     <div className="lg:col-start-3">
                         <AnimatePresence mode="wait">
                             {selectedPost ? (
-                                <motion.div
-                                    key="form"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className="bg-teal-900 rounded-[2.5rem] p-8 text-white shadow-2xl sticky top-28"
-                                >
-                                    <div className="flex justify-between items-start mb-6">
-                                        <h2 className="text-2xl font-bold font-['Plus_Jakarta_Sans']">Quick Offer</h2>
-                                        <button onClick={() => setSelectedPost(null)} className="text-teal-400 hover:text-white transition-colors">
-                                            <AlertCircle size={20} />
-                                        </button>
-                                    </div>
+                                <div className="fixed inset-0 z-50 lg:relative lg:inset-auto lg:z-auto">
+                                    {/* Mobile Backdrop */}
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        onClick={() => setSelectedPost(null)}
+                                        className="absolute inset-0 bg-teal-950/40 backdrop-blur-sm lg:hidden"
+                                    />
 
-                                    <div className="bg-teal-800/50 backdrop-blur-md rounded-2xl p-4 mb-6 border border-teal-700/50">
-                                        <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Responding to</p>
-                                        <p className="font-bold truncate">{selectedPost.title}</p>
-                                        <p className="text-xs text-teal-300">Seeker: {selectedPost.seeker_name}</p>
-                                    </div>
-
-                                    {success ? (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="bg-teal-500/20 border border-teal-500/50 p-6 rounded-2xl text-center"
-                                        >
-                                            <CheckCircle className="mx-auto mb-3 text-teal-300" size={32} />
-                                            <p className="font-bold">Message Sent!</p>
-                                            <p className="text-xs text-teal-200 mt-1">The seeker will see your profile and message.</p>
-                                        </motion.div>
-                                    ) : (
-                                        <form onSubmit={handleRespond}>
-                                            <label className="block text-xs font-black text-teal-300 uppercase tracking-widest mb-2">Your Proposal</label>
-                                            <textarea
-                                                required
-                                                className="w-full h-40 bg-teal-800/80 border border-teal-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all placeholder:text-teal-700 mb-6"
-                                                placeholder="Explain why you are the best fit for this job. Include your experience and estimated timeline..."
-                                                value={message}
-                                                onChange={(e) => setMessage(e.target.value)}
-                                            ></textarea>
-                                            <button
-                                                type="submit"
-                                                disabled={isSubmitting}
-                                                className="w-full bg-white text-teal-900 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-teal-50 transition-all disabled:opacity-50 group"
-                                            >
-                                                {isSubmitting ? 'Sending...' : 'Send Offer'}
-                                                <Send size={18} className="group-hover:translate-x-1 transition-transform" />
+                                    {/* Panel */}
+                                    <motion.div
+                                        key="form"
+                                        initial={{ opacity: 0, y: 100 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 100 }}
+                                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                        className="absolute inset-x-0 bottom-0 lg:sticky lg:top-28 lg:inset-auto bg-teal-900 rounded-t-[3rem] lg:rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl max-h-[90vh] overflow-y-auto"
+                                    >
+                                        <div className="flex justify-between items-start mb-6">
+                                            <h2 className="text-2xl font-bold font-['Plus_Jakarta_Sans']">Quick Offer</h2>
+                                            <button onClick={() => setSelectedPost(null)} className="p-2 bg-teal-800 rounded-full text-teal-400 hover:text-white transition-colors">
+                                                <AlertCircle size={20} />
                                             </button>
-                                        </form>
-                                    )}
-                                </motion.div>
+                                        </div>
+
+                                        <div className="bg-teal-800/50 backdrop-blur-md rounded-2xl p-4 mb-6 border border-teal-700/50">
+                                            <p className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Responding to</p>
+                                            <p className="font-bold truncate">{selectedPost.title}</p>
+                                            <p className="text-xs text-teal-300">Seeker: {selectedPost.seeker_name}</p>
+                                        </div>
+
+                                        {success ? (
+                                            <motion.div
+                                                initial={{ opacity: 0, scale: 0.95 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="bg-teal-500/20 border border-teal-500/50 p-6 rounded-2xl text-center"
+                                            >
+                                                <CheckCircle className="mx-auto mb-3 text-teal-300" size={32} />
+                                                <p className="font-bold">Message Sent!</p>
+                                                <p className="text-xs text-teal-200 mt-1">The seeker will see your profile and message.</p>
+                                            </motion.div>
+                                        ) : (
+                                            <form onSubmit={handleRespond}>
+                                                <label className="block text-xs font-black text-teal-300 uppercase tracking-widest mb-2">Your Proposal</label>
+                                                <textarea
+                                                    required
+                                                    className="w-full h-40 bg-teal-800/80 border border-teal-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none transition-all placeholder:text-teal-700 mb-6"
+                                                    placeholder="Explain why you are the best fit for this job. Include your experience and estimated timeline..."
+                                                    value={message}
+                                                    onChange={(e) => setMessage(e.target.value)}
+                                                ></textarea>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isSubmitting}
+                                                    className="w-full bg-white text-teal-900 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-teal-50 transition-all disabled:opacity-50 group"
+                                                >
+                                                    {isSubmitting ? 'Sending...' : 'Send Offer'}
+                                                    <Send size={18} className="group-hover:translate-x-1 transition-transform" />
+                                                </button>
+                                            </form>
+                                        )}
+                                    </motion.div>
+                                </div>
                             ) : (
-                                <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm text-center py-20 sticky top-28">
+                                <div className="hidden lg:block bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm text-center py-20 sticky top-28">
                                     <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-slate-200">
                                         <MessageSquare size={32} />
                                     </div>

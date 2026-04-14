@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Globe, Menu, X, User, LogOut, LayoutDashboard, Settings } from 'lucide-react';
+import { Globe, Menu, X, User, LogOut, LayoutDashboard, Settings, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -129,25 +130,47 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[45] bg-white pt-24 px-6 lg:hidden">
-          <div className="flex flex-col gap-6">
-            <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-2xl font-bold text-teal-950">{t('explore')}</Link>
-            <Link to="/how-it-works" onClick={() => setIsMenuOpen(false)} className="text-2xl font-bold text-teal-950">{t('how_it_works')}</Link>
-            <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-2xl font-bold text-teal-950">{t('about')}</Link>
-            <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[45] bg-white lg:hidden pt-24 px-6 flex flex-col"
+          >
+            <div className="flex flex-col gap-2">
+              {[
+                { to: '/', label: t('explore') },
+                { to: '/how-it-works', label: t('how_it_works') },
+                { to: '/about', label: t('about') },
+              ].map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="group flex items-center justify-between py-6 border-b border-slate-50 text-2xl font-bold text-teal-950 hover:text-teal-600 transition-colors"
+                >
+                  {link.label}
+                  <ChevronRight className="text-slate-200 group-hover:text-teal-600 group-hover:translate-x-1 transition-all" size={24} />
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-auto pb-12 space-y-4">
               {user ? (
                 <>
                   <Link
                     to={user.role === 'admin' ? '/admin/dashboard' : `/dashboard/${user.role}`}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-2xl font-bold text-teal-950 font-['Plus_Jakarta_Sans']"
+                    className="flex items-center justify-center gap-3 w-full py-5 bg-teal-50 text-teal-700 rounded-3xl font-black uppercase tracking-widest text-sm"
                   >
-                    Dashboard
+                    <LayoutDashboard size={20} />
+                    Go to Dashboard
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="glass-button !w-full !text-lg !py-4 text-red-600"
+                    className="w-full py-5 text-red-600 font-bold hover:bg-red-50 rounded-3xl transition-colors"
                   >
                     Logout
                   </button>
@@ -156,7 +179,7 @@ export default function Navbar() {
                 <Link
                   to="/auth"
                   onClick={() => setIsMenuOpen(false)}
-                  className="glass-button !w-full !text-lg !py-4 text-center"
+                  className="flex items-center justify-center w-full py-5 bg-slate-50 text-teal-950 rounded-3xl font-black uppercase tracking-widest text-sm"
                 >
                   {t('login')}
                 </Link>
@@ -164,14 +187,14 @@ export default function Navbar() {
               <Link
                 to="/post-need"
                 onClick={() => setIsMenuOpen(false)}
-                className="glass-button glass-button-accent !w-full !text-lg !py-4 text-center"
+                className="flex items-center justify-center w-full py-5 bg-teal-600 text-white rounded-3xl font-black uppercase tracking-widest text-sm shadow-xl shadow-teal-600/20"
               >
                 {t('post_need')}
               </Link>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </>
   );

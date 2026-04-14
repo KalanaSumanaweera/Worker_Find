@@ -114,7 +114,7 @@ function PostCard({ post }: PostCardProps) {
             layout
             className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden"
         >
-            <div className="p-8">
+            <div className="p-6 md:p-8">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                     <div className="flex-1">
                         <div className="flex items-center gap-3 mb-3">
@@ -129,23 +129,28 @@ function PostCard({ post }: PostCardProps) {
                         </div>
                         <h3 className="text-2xl font-bold text-teal-950 font-['Plus_Jakarta_Sans'] mb-2">{post.title}</h3>
                         <p className="text-slate-600 text-sm line-clamp-2 mb-4">{post.description}</p>
-                        <div className="flex flex-wrap gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                        <div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
                             <span className="flex items-center gap-1.5"><MapPin size={14} className="text-teal-600" /> {post.city}</span>
                             <span className="flex items-center gap-1.5"><ClipboardCheck size={14} className="text-teal-600" /> {post.category_name}</span>
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-2 bg-slate-50 p-6 rounded-[2rem] border border-slate-100 min-w-[160px]">
-                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-1 relative">
-                            <MessageSquare className="text-teal-600" size={24} />
-                            {responsesCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
-                                    {responsesCount}
-                                </span>
-                            )}
+                    <div className="flex flex-row md:flex-col items-center justify-between md:justify-center gap-2 bg-slate-50 p-6 rounded-[2rem] border border-slate-100 min-w-full md:min-w-[160px]">
+                        <div className="flex items-center gap-3 md:flex-col">
+                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm relative">
+                                <MessageSquare className="text-teal-600" size={24} />
+                                {responsesCount > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
+                                        {responsesCount}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="md:text-center">
+                                <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Responses</span>
+                                <span className="text-xl font-black text-teal-950 line-height-none">{responsesCount}</span>
+                            </div>
                         </div>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Responses</span>
-                        <span className="text-xl font-black text-teal-950">{responsesCount}</span>
+                        <ArrowRight size={20} className="text-slate-200 md:hidden" />
                     </div>
                 </div>
 

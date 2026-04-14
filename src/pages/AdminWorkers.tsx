@@ -94,14 +94,14 @@ export default function AdminWorkers() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <div className="flex gap-2 bg-slate-50 p-1 rounded-2xl">
+                    <div className="flex gap-2 bg-slate-50 p-1.5 rounded-2xl overflow-x-auto scrollbar-none">
                         {['all', 'pending', 'approved', 'rejected'].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filter === f
-                                        ? 'bg-white text-teal-700 shadow-sm'
-                                        : 'text-slate-500 hover:text-teal-600'
+                                className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${filter === f
+                                    ? 'bg-white text-teal-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-teal-600'
                                     }`}
                             >
                                 {f}
@@ -111,89 +111,141 @@ export default function AdminWorkers() {
                 </div>
 
                 {/* Table/List */}
-                <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-12">
                     {loading ? (
                         <div className="p-12 text-center text-slate-400">Loading workers...</div>
                     ) : filtered.length === 0 ? (
                         <div className="p-12 text-center text-slate-400">No workers found matching your criteria.</div>
                     ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead>
-                                    <tr className="bg-slate-50/50 border-b border-slate-100">
-                                        <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Professional</th>
-                                        <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Location</th>
-                                        <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Active</th>
-                                        <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    <AnimatePresence>
-                                        {filtered.map((w, i) => (
-                                            <motion.tr
-                                                key={w.id}
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                className="hover:bg-slate-50/30 transition-colors"
-                                            >
-                                                <td className="px-6 py-5">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 font-bold">
-                                                            {w.user_name[0]}
+                        <>
+                            {/* Desktop Table View */}
+                            <div className="hidden md:block overflow-x-auto">
+                                <table className="w-full text-left">
+                                    <thead>
+                                        <tr className="bg-slate-50/50 border-b border-slate-100">
+                                            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Professional</th>
+                                            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Location</th>
+                                            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                                            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider">Active</th>
+                                            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50">
+                                        <AnimatePresence>
+                                            {filtered.map((w) => (
+                                                <motion.tr
+                                                    key={w.id}
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    className="hover:bg-slate-50/30 transition-colors"
+                                                >
+                                                    <td className="px-6 py-5">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 font-bold">
+                                                                {w.user_name[0]}
+                                                            </div>
+                                                            <div>
+                                                                <p className="font-bold text-teal-950 font-['Plus_Jakarta_Sans']">{w.user_name}</p>
+                                                                <p className="text-xs text-slate-500">{w.job}</p>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <p className="font-bold text-teal-950 font-['Plus_Jakarta_Sans']">{w.user_name}</p>
-                                                            <p className="text-xs text-slate-500">{w.job}</p>
+                                                    </td>
+                                                    <td className="px-6 py-5">
+                                                        <div className="flex items-center gap-2 text-slate-500 text-sm">
+                                                            <MapPin size={14} />
+                                                            {w.city}, {w.province}
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    <div className="flex items-center gap-2 text-slate-500 text-sm">
-                                                        <MapPin size={14} />
-                                                        {w.city}, {w.province}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-5">
+                                                    </td>
+                                                    <td className="px-6 py-5">
+                                                        <StatusBadge status={w.status} />
+                                                    </td>
+                                                    <td className="px-6 py-5">
+                                                        <button
+                                                            onClick={() => handleUpdate(w.id, { is_active: !w.is_active })}
+                                                            className={`w-12 h-6 rounded-full relative transition-all ${w.is_active ? 'bg-teal-500' : 'bg-slate-200'}`}
+                                                        >
+                                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${w.is_active ? 'left-7' : 'left-1'}`} />
+                                                        </button>
+                                                    </td>
+                                                    <td className="px-6 py-5 text-right">
+                                                        <div className="flex justify-end gap-2">
+                                                            {w.status !== 'approved' && (
+                                                                <button
+                                                                    onClick={() => handleUpdate(w.id, { status: 'approved' })}
+                                                                    title="Approve"
+                                                                    className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all"
+                                                                >
+                                                                    <CheckCircle size={20} />
+                                                                </button>
+                                                            )}
+                                                            {w.status !== 'rejected' && (
+                                                                <button
+                                                                    onClick={() => handleUpdate(w.id, { status: 'rejected' })}
+                                                                    title="Reject"
+                                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                                                                >
+                                                                    <XCircle size={20} />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </motion.tr>
+                                            ))}
+                                        </AnimatePresence>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Mobile Card View */}
+                            <div className="md:hidden divide-y divide-slate-50">
+                                {filtered.map((w) => (
+                                    <div key={w.id} className="p-6">
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 font-bold text-xl">
+                                                {w.user_name[0]}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-bold text-teal-950 font-['Plus_Jakarta_Sans']">{w.user_name}</p>
                                                     <StatusBadge status={w.status} />
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    <button
-                                                        onClick={() => handleUpdate(w.id, { is_active: !w.is_active })}
-                                                        className={`w-12 h-6 rounded-full relative transition-all ${w.is_active ? 'bg-teal-500' : 'bg-slate-200'}`}
-                                                    >
-                                                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${w.is_active ? 'left-7' : 'left-1'}`} />
+                                                </div>
+                                                <p className="text-sm text-slate-500">{w.job}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-slate-500 text-sm mb-6">
+                                            <MapPin size={14} className="text-teal-500" />
+                                            {w.city}, {w.province}
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-4 border-t border-slate-50">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Status</span>
+                                                <button
+                                                    onClick={() => handleUpdate(w.id, { is_active: !w.is_active })}
+                                                    className={`w-12 h-6 rounded-full relative transition-all ${w.is_active ? 'bg-teal-500' : 'bg-slate-200'}`}
+                                                >
+                                                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${w.is_active ? 'left-7' : 'left-1'}`} />
+                                                </button>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                {w.status !== 'approved' && (
+                                                    <button onClick={() => handleUpdate(w.id, { status: 'approved' })} className="p-3 bg-teal-50 text-teal-600 rounded-2xl">
+                                                        <CheckCircle size={20} />
                                                     </button>
-                                                </td>
-                                                <td className="px-6 py-5 text-right">
-                                                    <div className="flex justify-end gap-2">
-                                                        {w.status !== 'approved' && (
-                                                            <button
-                                                                onClick={() => handleUpdate(w.id, { status: 'approved' })}
-                                                                title="Approve"
-                                                                className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all"
-                                                            >
-                                                                <CheckCircle size={20} />
-                                                            </button>
-                                                        )}
-                                                        {w.status !== 'rejected' && (
-                                                            <button
-                                                                onClick={() => handleUpdate(w.id, { status: 'rejected' })}
-                                                                title="Reject"
-                                                                className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                                                            >
-                                                                <XCircle size={20} />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                    </AnimatePresence>
-                                </tbody>
-                            </table>
-                        </div>
+                                                )}
+                                                {w.status !== 'rejected' && (
+                                                    <button onClick={() => handleUpdate(w.id, { status: 'rejected' })} className="p-3 bg-red-50 text-red-600 rounded-2xl">
+                                                        <XCircle size={20} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             </main>

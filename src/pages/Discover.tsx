@@ -35,6 +35,7 @@ export default function Discover() {
   const [workers, setWorkers] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Fetch categories on load
   useEffect(() => {
@@ -111,9 +112,23 @@ export default function Discover() {
   return (
     <div className="min-h-screen bg-[#fafbfc]">
       <Navbar />
-      <main className="pt-32 pb-24 px-4 md:px-8 lg:px-20 max-w-[1440px] mx-auto">
-        {/* Unified Single-Line Filter Bar */}
-        <section className="mb-12 relative z-40">
+      <main className="pt-32 pb-24 px-4 sm:px-8 lg:px-20 max-w-[1440px] mx-auto">
+        {/* Mobile Filter Button */}
+        <div className="md:hidden mb-6">
+          <button
+            onClick={() => setShowFilters(true)}
+            className="w-full flex items-center justify-between px-6 py-4 bg-white rounded-2xl shadow-sm border border-slate-100 text-teal-950 font-bold"
+          >
+            <div className="flex items-center gap-3">
+              <SlidersHorizontal size={20} className="text-teal-600" />
+              Filter Professionals
+            </div>
+            <ChevronDown size={20} className="text-slate-400" />
+          </button>
+        </div>
+
+        {/* Unified Filter Bar — Hidden on Mobile, shown in Drawer */}
+        <section className="hidden md:block mb-12 relative z-40">
           <div className="bg-white p-2 md:p-3 rounded-[2.5rem] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col gap-4">
             <div className="flex flex-wrap md:flex-nowrap items-center gap-1 md:gap-2">
               {/* Expanding Search Input */}
@@ -238,22 +253,142 @@ export default function Discover() {
           </div>
         </section>
 
+        {/* Mobile Filter Drawer */}
+        <AnimatePresence>
+          {showFilters && (
+            <div className="fixed inset-0 z-[60] md:hidden">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowFilters(false)}
+                className="absolute inset-0 bg-teal-950/40 backdrop-blur-sm"
+              />
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                className="absolute inset-x-0 bottom-0 bg-white rounded-t-[3rem] p-8 pb-12 shadow-2xl overflow-y-auto max-h-[90vh]"
+              >
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-2xl font-bold text-teal-950">Filters</h2>
+                  <button onClick={() => setShowFilters(false)} className="p-2 bg-slate-50 rounded-full text-slate-400">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-teal-500/10 text-sm font-medium"
+                      placeholder="Search names or skills..."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Category</label>
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold text-sm"
+                      >
+                        <option value="">All Categories</option>
+                        {categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Region</label>
+                      <select
+                        value={selectedProvince}
+                        onChange={(e) => { setSelectedProvince(e.target.value); setSelectedDistrict(''); setSelectedVillages([]); }}
+                        className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold text-sm"
+                      >
+                        <option value="">Any Province</option>
+                        {Object.keys(locations).map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    </div>
+
+                    {selectedProvince && (
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">District</label>
+                        <select
+                          value={selectedDistrict}
+                          onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedVillages([]); }}
+                          className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold text-sm"
+                        >
+                          <option value="">Any District</option>
+                          {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Minimum Rating</label>
+                      <select
+                        value={minRating}
+                        onChange={(e) => setMinRating(Number(e.target.value))}
+                        className="w-full p-4 bg-slate-50 border-none rounded-2xl text-slate-700 font-bold text-sm"
+                      >
+                        <option value="0">Any Rating</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="4.5">4.5+ Stars</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {selectedDistrict && (
+                    <div className="space-y-3">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Villages</label>
+                      <div className="flex flex-wrap gap-2">
+                        {locations[selectedProvince as keyof typeof locations][selectedDistrict as keyof (typeof locations)["Western"]].map(v => (
+                          <button
+                            key={v}
+                            onClick={() => toggleVillage(v)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${selectedVillages.includes(v)
+                              ? 'bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/20'
+                              : 'bg-slate-50 text-slate-500 border-transparent'
+                              }`}
+                          >
+                            {v}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="w-full py-4 bg-teal-600 text-white font-bold rounded-[1.5rem] shadow-xl shadow-teal-600/20 mt-4 active:scale-95 transition-transform"
+                  >
+                    Show Result
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
         {/* Artisans Grid */}
         <section>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 px-2">
             <div>
               <h1 className="text-3xl md:text-4xl font-extrabold text-teal-950 font-['Plus_Jakarta_Sans'] tracking-tight mb-2">Find Local Magic</h1>
-              <div className="flex items-center gap-2 text-slate-500 font-medium">
+              <div className="flex items-center gap-2 text-slate-500 font-medium text-sm md:text-base">
                 <MapPin size={18} className="text-teal-500" />
                 {selectedProvince ? `${selectedProvince}${selectedDistrict ? ` > ${selectedDistrict}` : ''}` : 'Sri Lanka'}
               </div>
             </div>
-            <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
-              <span className="text-teal-600 font-black text-xl">{filteredArtisans.length}</span> <span className="text-slate-400 font-bold uppercase tracking-wider text-xs">Professionals Found</span>
+            <div className="bg-white px-4 md:px-6 py-2 md:py-3 rounded-2xl shadow-sm border border-slate-100">
+              <span className="text-teal-600 font-black text-lg md:text-xl">{filteredArtisans.length}</span> <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px] md:text-xs">Professionals Found</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {loading ? (
               // Loading State
               Array.from({ length: 6 }).map((_, i) => (

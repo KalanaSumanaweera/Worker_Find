@@ -105,16 +105,16 @@ export default function WorkerProfile() {
 
         {/* Top Section: Profile Header & Availability */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 items-start">
-          <div className="lg:col-span-2 flex flex-col md:flex-row gap-8 py-4 ml-8 mt-8">
+          <div className="lg:col-span-2 flex flex-col md:flex-row gap-8 py-4">
             <img
               src={`https://picsum.photos/seed/${worker.name}/400/500`}
               alt={worker.name}
               className="w-full md:w-64 h-80 object-cover rounded-[2rem] shadow-xl"
               referrerPolicy="no-referrer"
             />
-            <div className="flex flex-col justify-center ml-2">
+            <div className="flex flex-col justify-center">
               <div className="flex items-center gap-2 mb-3">
-                <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-teal-100">{worker.job.includes('Master') ? 'Master Artisan' : 'Professional'}</span>
+                <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-teal-100">{worker.job.includes('Master') ? 'Master Provider' : 'Professional'}</span>
                 <div className="flex items-center gap-1 text-amber-500 font-bold text-sm bg-amber-50 px-3 py-1 rounded-full">
                   <Star size={14} className="fill-amber-500" /> {Number(worker.rating).toFixed(1)}
                 </div>
@@ -124,23 +124,23 @@ export default function WorkerProfile() {
               <div className="space-y-4 mb-8">
                 <div className="flex items-center gap-3 text-slate-500">
                   <MapPin size={16} className="text-teal-500 shrink-0" />
-                  <span className="text-[18px] font-medium text-slate-600 tracking-tight">{worker.city}, {worker.province}, Sri Lanka</span>
+                  <span className="text-base md:text-[18px] font-medium text-slate-600 tracking-tight">{worker.city}, {worker.province}, Sri Lanka</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-500">
                   <Phone size={16} className="text-teal-500 shrink-0" />
-                  <span className="text-[18px] font-medium text-slate-600 tracking-tight">{worker.phone || '+94 77 123 4567'}</span>
+                  <span className="text-base md:text-[18px] font-medium text-slate-600 tracking-tight">{worker.phone || '+94 77 123 4567'}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-500 text-sm font-medium bg-teal-50/50 p-2 rounded-xl border border-teal-50/10 w-fit">
                   <Mail size={14} className="text-teal-600 shrink-0" />
-                  <span className="text-md">{worker.email || `${worker.name.toLowerCase().replace(' ', '.')}@artisanlanka.com`}</span>
+                  <span className="text-sm md:text-md">{worker.email || `${worker.name.toLowerCase().replace(' ', '.')}@workerfind.com`}</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <a href={`https://wa.me/${worker.phone?.replace('+', '').replace(' ', '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 glass-button glass-button-accent !px-6 !py-3 font-extrabold shadow-lg shadow-teal-500/10 transition-transform active:scale-95">
+                <a href={`https://wa.me/${worker.phone?.replace('+', '').replace(' ', '')}`} target="_blank" rel="noreferrer" className="flex-1 sm:flex-none flex items-center justify-center gap-2 glass-button glass-button-accent !px-6 !py-3 font-extrabold shadow-lg shadow-teal-500/10 transition-transform active:scale-95">
                   <MessageCircle size={18} /> <span className="text-sm">WhatsApp</span>
                 </a>
-                <a href={`tel:${worker.phone}`} className="flex items-center gap-2 glass-button !px-6 !py-3 font-extrabold transition-transform active:scale-95 bg-white border-slate-200">
+                <a href={`tel:${worker.phone}`} className="flex-1 sm:flex-none flex items-center justify-center gap-2 glass-button !px-6 !py-3 font-extrabold transition-transform active:scale-95 bg-white border-slate-200">
                   <Phone size={18} /> <span className="text-sm border-none">Call Now</span>
                 </a>
               </div>
@@ -214,7 +214,7 @@ export default function WorkerProfile() {
                   <CheckCircle className="text-teal-600 shrink-0" size={18} />
                   <div>
                     <h4 className="font-bold text-teal-950 text-xs uppercase tracking-tight">Identity Verified</h4>
-                    <p className="text-[10px] text-teal-800 leading-tight mt-1">Credentials and business registration verified by Artisan Lanka.</p>
+                    <p className="text-[10px] text-teal-800 leading-tight mt-1">Credentials and business registration verified by Worker Find.</p>
                   </div>
                 </div>
               </div>

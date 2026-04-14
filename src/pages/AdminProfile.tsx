@@ -78,15 +78,15 @@ export default function AdminProfile() {
     return (
         <div className="min-h-screen bg-[#fafbfc]">
             <Navbar />
-            <main className="pt-32 pb-24 px-6 md:px-20 max-w-[1000px] mx-auto">
-                <div className="mb-12">
-                    <h1 className="text-4xl font-extrabold text-teal-950 mb-3 tracking-tight">Register New Professional</h1>
-                    <p className="text-slate-500 font-medium text-lg">Add high-quality artisans to the Worker Find directory.</p>
+            <main className="pt-28 pb-12 px-4 md:px-8 max-w-[1000px] mx-auto">
+                <div className="mb-10">
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-teal-950 mb-3 tracking-tight">Register New Professional</h1>
+                    <p className="text-slate-500 font-medium text-base md:text-lg">Add high-quality artisans to the Worker Find directory.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Identity Section */}
-                    <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-sm border border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 ml-2">Artesan Name</label>
@@ -117,8 +117,8 @@ export default function AdminProfile() {
                                 </div>
                             </div>
                             <div className="col-span-full">
-                                <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 ml-2">Job Categories (Select all that apply)</label>
-                                <div className="flex flex-wrap gap-3">
+                                <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 ml-2">Job Categories</label>
+                                <div className="flex flex-wrap gap-2 md:gap-3">
                                     {categories.map(c => {
                                         const isSelected = formData.category_ids.includes(c.id.toString());
                                         return (
@@ -126,9 +126,9 @@ export default function AdminProfile() {
                                                 key={c.id}
                                                 type="button"
                                                 onClick={() => toggleCategory(c.id.toString())}
-                                                className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all border-2 ${isSelected
+                                                className={`px-5 md:px-6 py-2.5 md:py-3 rounded-2xl text-[10px] md:text-sm font-bold transition-all border-2 ${isSelected
                                                     ? 'bg-teal-500 border-teal-500 text-white shadow-lg shadow-teal-500/20'
-                                                    : 'bg-white border-slate-100 text-slate-500 hover:border-teal-200'
+                                                    : 'bg-white border-slate-50 text-slate-500 hover:border-teal-200'
                                                     }`}
                                             >
                                                 {c.name}
@@ -154,7 +154,7 @@ export default function AdminProfile() {
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 ml-2">Province</label>
                                     <input
@@ -223,13 +223,13 @@ export default function AdminProfile() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-8 pt-4">
-                        <div className="hidden md:flex items-center gap-2 text-slate-400 font-bold text-sm tracking-tight px-6 py-3 bg-slate-50 rounded-full border border-slate-100">
-                            <CheckCircle size={16} className="text-teal-500" /> All changes are manually reviewed before listing
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
+                        <div className="flex items-center gap-2 text-slate-400 font-bold text-[10px] md:text-sm tracking-tight px-6 py-3 bg-slate-50 rounded-full border border-slate-100 w-full md:w-auto">
+                            <CheckCircle size={16} className="text-teal-500 shrink-0" /> <span className="flex-1">All changes are manually reviewed before listing</span>
                         </div>
                         <button
                             type="submit"
-                            className={`glass-button glass-button-accent !px-12 !py-5 shadow-2xl shadow-teal-500/20 text-xl font-bold flex items-center gap-3 transition-all ${submitted ? 'opacity-50 pointer-events-none' : ''}`}
+                            className={`w-full md:w-auto glass-button glass-button-accent !px-12 !py-5 shadow-2xl shadow-teal-500/20 text-lg md:text-xl font-bold flex items-center justify-center gap-3 transition-all ${submitted ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             {submitted ? (
                                 <>Success! Profile Created</>

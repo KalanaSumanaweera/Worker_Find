@@ -93,8 +93,8 @@ export default function AdminPosts() {
                                 key={f}
                                 onClick={() => setFilter(f)}
                                 className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filter === f
-                                        ? 'bg-white text-teal-700 shadow-sm'
-                                        : 'text-slate-500 hover:text-teal-600'
+                                    ? 'bg-white text-teal-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-teal-600'
                                     }`}
                             >
                                 {f}
@@ -148,29 +148,29 @@ export default function AdminPosts() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
+                                    <div className="flex flex-wrap items-center gap-3 w-full md:w-auto pt-6 md:pt-0 border-t md:border-t-0 border-slate-50">
                                         <button
                                             onClick={() => handleUpdate(post.id, { is_active: !post.is_active })}
-                                            className={`group px-3 py-2 rounded-xl flex items-center gap-2 text-xs font-bold transition-all ${post.is_active ? 'bg-teal-50 text-teal-700' : 'bg-slate-50 text-slate-500'
+                                            className={`px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all flex-1 md:flex-none ${post.is_active ? 'bg-teal-50 text-teal-700' : 'bg-slate-50 text-slate-500'
                                                 }`}
                                         >
                                             <Power size={14} className={post.is_active ? 'text-teal-600' : 'text-slate-400'} />
                                             {post.is_active ? 'Active' : 'Inactive'}
                                         </button>
 
-                                        <div className="h-8 w-px bg-slate-100 mx-2 hidden md:block" />
+                                        <div className="h-8 w-px bg-slate-100 mx-1 hidden md:block" />
 
                                         <button
                                             onClick={() => handleUpdate(post.id, { status: 'approved' })}
                                             disabled={post.status === 'approved'}
-                                            className="flex-1 md:flex-none px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-teal-600/10 hover:bg-teal-700 transition-all disabled:opacity-30 disabled:shadow-none"
+                                            className="px-6 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-teal-600/10 hover:bg-teal-700 transition-all disabled:opacity-30 disabled:shadow-none flex-1 md:flex-none whitespace-nowrap"
                                         >
                                             Approve
                                         </button>
                                         <button
                                             onClick={() => handleUpdate(post.id, { status: 'rejected' })}
                                             disabled={post.status === 'rejected'}
-                                            className="flex-1 md:flex-none px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition-all disabled:opacity-30"
+                                            className="px-6 py-2.5 border border-red-200 text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition-all disabled:opacity-30 flex-1 md:flex-none"
                                         >
                                             Reject
                                         </button>
