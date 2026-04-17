@@ -380,9 +380,13 @@ app.get('/api/categories', async (req, res) => {
     try {
         const categories = await sql`SELECT * FROM categories ORDER BY name ASC`;
         res.json(categories);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching categories:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({
+            error: 'Failed to fetch categories',
+            message: error.message,
+            stack: error.stack
+        });
     }
 });
 
@@ -512,6 +516,16 @@ app.post('/api/reviews', async (req, res) => {
         console.error('Error adding review:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+// Error handling middleware
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error('SERVER ERROR:', err);
+    res.status(500).json({
+        error: 'Global Server Error',
+        message: err.message,
+        stack: err.stack
+    });
 });
 
 if (process.env.NODE_ENV !== 'production') {
