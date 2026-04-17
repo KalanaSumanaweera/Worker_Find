@@ -146,6 +146,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.redirect(302, googleUrl);
         }
 
+        if (url === '/api/auth/google/callback') {
+            const { code, state } = req.query;
+            if (!code) return res.status(400).json({ error: 'OAuth code missing' });
+
+            const { role } = JSON.parse(decodeURIComponent(state as string) || '{"role":"seeker"}');
+
+            // 1. Exchange code for token
+            const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    code: code as string,
+                    client_id: process.env.GOOGLE_CLIENT_ID!,
+                    client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+                    redirect_uri: process.env.CALLBACK_URL!,
+                    grant_type: 'authorization_code'
+                })
+            });
+
+            const tokens = await tokenRes.json();
+            if (tokens.error) return res.status(500).json({ error: 'Google Token Error', details: tokens });
+
+            // 2. Get user profile
+            const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                headers: { Authorization: `Bearer ${tokens.access_token}` }
+            });
+            const googleUser = await userRes.json();
+
+            // 3. Upsert user in DB
+            let users = await sql`SELECT * FROM users WHERE email = ${googleUser.email}`;
+            let user;
+
+            if (users.length === 0) {
+                const newUser = await sql`
+                    INSERT INTO users (name, email, role)
+                    VALUES (${googleUser.name}, ${googleUser.email}, ${role})
+                    RETURNING id, name, email, role
+                `;
+                user = newUser[0];
+            } else {
+                user = { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role };
+            }
+
+            // 4. Generate and redirect
+            const token = generateToken(user);
+            const clientUrl = process.env.CLIENT_URL || 'https://worker-find.vercel.app';
+            return res.redirect(302, `${clientUrl}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+        }
+
         return res.status(404).json({ error: 'Route not found', url });
 
     } catch (error: any) {
