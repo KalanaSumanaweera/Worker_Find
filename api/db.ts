@@ -1,16 +1,19 @@
 import { neon } from '@neondatabase/serverless';
 
 // Export a proxy that initializes the neon client on first use
-// This ensures process.env.DATABASE_URL is available when the client is created.
+let clientInstance: any = null;
+const getClient = () => {
+    if (!clientInstance) clientInstance = neon(process.env.DATABASE_URL || '');
+    return clientInstance;
+};
+
 const sqlProxy = new Proxy(() => { }, {
-    get: (target, prop, receiver) => {
-        const client = neon(process.env.DATABASE_URL || '');
-        return (client as any)[prop];
+    get: (target, prop) => {
+        return getClient()[prop];
     },
     apply: (target, thisArg, argumentsList) => {
-        const client = neon(process.env.DATABASE_URL || '');
-        return (client as any)(...argumentsList);
+        return getClient()(...argumentsList);
     }
 });
 
-export default sqlProxy as ReturnType<typeof neon>;
+export default sqlProxy as any;
