@@ -163,58 +163,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         if (url === '/api/auth/google/callback') {
-            const { code, state } = req.query;
+            const { code, state, debug } = req.query;
             
-            if (!code) return res.status(400).json({ error: 'OAuth code missing from Google' });
-            if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-                return res.status(500).json({ error: 'Google Credentials not configured in Vercel' });
-            }
-
-            let role = 'seeker';
             try {
-                if (state) {
-                    const parsedState = JSON.parse(decodeURIComponent(state as string));
-                    role = parsedState.role || 'seeker';
+                if (!code) return res.status(400).json({ error: 'OAuth code missing from Google' });
+                if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+                    return res.status(500).json({ error: 'Google Credentials not configured in Vercel' });
                 }
-            } catch (e) {
-                console.warn('Failed to parse OAuth state, defaulting to seeker');
-            }
 
-            // 1. Exchange code for token
-            const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    code: code as string,
-                    client_id: process.env.GOOGLE_CLIENT_ID!,
-                    client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-                    redirect_uri: process.env.CALLBACK_URL!,
-                    grant_type: 'authorization_code'
-                })
-            });
+                let role = 'seeker';
+                try {
+                    if (state) {
+                        const parsedState = JSON.parse(decodeURIComponent(state as string));
+                        role = parsedState.role || 'seeker';
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse OAuth state');
+                }
 
-            if (!tokenRes.ok) {
-                const errorDetail = await tokenRes.text();
-                return res.status(500).json({ error: 'Google Token Exchange Failed', details: errorDetail });
-            }
+                // 1. Exchange code for token
+                const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        code: code as string,
+                        client_id: process.env.GOOGLE_CLIENT_ID!,
+                        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+                        redirect_uri: process.env.CALLBACK_URL!,
+                        grant_type: 'authorization_code'
+                    })
+                });
 
-            const tokens = await tokenRes.json();
+                if (!tokenRes.ok) {
+                    const errorDetail = await tokenRes.text();
+                    return res.status(500).json({ error: 'Google Token Exchange Failed', details: errorDetail, callback_url: process.env.CALLBACK_URL });
+                }
 
-            // 2. Get user profile
-            const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                headers: { Authorization: `Bearer ${tokens.access_token}` }
-            });
+                const tokens = await tokenRes.json();
 
-            if (!userRes.ok) return res.status(500).json({ error: 'Failed to fetch user profile from Google' });
-            
-            const googleUser = await userRes.json();
-            if (!googleUser.email) return res.status(500).json({ error: 'Google did not return an email' });
+                // 2. Get user profile
+                const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+                    headers: { Authorization: `Bearer ${tokens.access_token}` }
+                });
 
-            // 3. Upsert user in DB
-            let user;
-            try {
-                const users = await sql`SELECT * FROM users WHERE email = ${googleUser.email}`;
-                if (users.length === 0) {
+                if (!userRes.ok) return res.status(500).json({ error: 'Failed to fetch user profile from Google' });
+                
+                const googleUser = await userRes.json();
+                if (!googleUser.email) return res.status(500).json({ error: 'Google did not return an email' });
+
+                // 3. Upsert user in DB
+                let user;
+                const dbUsers = await sql`SELECT * FROM users WHERE email = ${googleUser.email}`;
+                if (dbUsers.length === 0) {
                     const newUser = await sql`
                         INSERT INTO users (name, email, role)
                         VALUES (${googleUser.name || 'Google User'}, ${googleUser.email}, ${role})
@@ -222,18 +222,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     `;
                     user = newUser[0];
                 } else {
-                    user = { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role };
+                    user = { id: dbUsers[0].id, name: dbUsers[0].name, email: dbUsers[0].email, role: dbUsers[0].role };
                 }
-            } catch (dbError: any) {
-                return res.status(500).json({ error: 'Database error during Google Login', message: dbError.message });
-            }
 
-            // 4. Generate and redirect
-            const token = generateToken(user);
-            const clientUrl = process.env.CLIENT_URL || 'https://worker-find.vercel.app';
-            // Ensure no double slashes or missing slashes
-            const redirectBase = clientUrl.endsWith('/') ? clientUrl.slice(0, -1) : clientUrl;
-            return res.redirect(302, `${redirectBase}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+                // 4. Generate and send
+                const token = generateToken(user);
+                
+                if (debug === 'true') {
+                    return res.json({ message: 'Success', user, token, client_url: process.env.CLIENT_URL });
+                }
+
+                const clientUrl = process.env.CLIENT_URL || 'https://worker-find.vercel.app';
+                const redirectBase = clientUrl.endsWith('/') ? clientUrl.slice(0, -1) : clientUrl;
+                return res.redirect(302, `${redirectBase}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+            } catch (callbackError: any) {
+                return res.status(500).json({ 
+                    error: 'Uncaught error in OAuth callback', 
+                    message: callbackError.message,
+                    stack: callbackError.stack ? 'present' : 'absent'
+                });
+            }
         }
 
         return res.status(404).json({ error: 'Route not found', url });
