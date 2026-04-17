@@ -41,7 +41,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         // --- PUBLIC TOOLS ---
-        if (url === '/api/health') {
+        if (url.includes('/api/debug')) {
+            const hash = await bcrypt.hash('test', 10);
+            return res.json({
+                received_url: url,
+                original_url: req.url,
+                method: rawMethod,
+                headers: req.headers,
+                lib_test: { bcrypt: !!hash, jwt: !!jwt.sign },
+                env_check: {
+                    has_db: !!process.env.DATABASE_URL,
+                    has_google: !!process.env.GOOGLE_CLIENT_ID,
+                    node_version: process.version
+                }
+            });
+        }
+
+        if (url === '/api/health' || url.includes('/health')) {
             await sql`SELECT 1`;
             return res.json({ status: 'ok', database: 'connected' });
         }
