@@ -16,13 +16,24 @@ export default async function handler(req: any, res: any) {
         }
     }
 
+    const mask = (str: string | undefined) => {
+        if (!str) return 'missing';
+        if (str.length < 10) return 'too-short';
+        return `${str.substring(0, 5)}...${str.substring(str.length - 5)}`;
+    };
+
     res.status(200).json({
-        diagnostics: 'v1',
-        database_url_present: !!dbUrl,
+        diagnostics: 'v2',
         database_status: dbStatus,
         db_error: dbError,
-        google_id_present: !!process.env.GOOGLE_CLIENT_ID,
+        env_check: {
+            DATABASE_URL: mask(dbUrl),
+            GOOGLE_CLIENT_ID: mask(process.env.GOOGLE_CLIENT_ID),
+            CALLBACK_URL: process.env.CALLBACK_URL || 'missing',
+            CLIENT_URL: process.env.CLIENT_URL || 'missing'
+        },
         node_env: process.env.NODE_ENV,
-        vercel_env: process.env.VERCEL_ENV
+        vercel_env: process.env.VERCEL_ENV || 'not-detected',
+        current_time: new Date().toISOString()
     });
 }
