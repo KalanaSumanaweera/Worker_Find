@@ -1,6 +1,12 @@
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 dotenv.config();
+
+import sql from './db';
+import { hashPassword, comparePassword, generateToken, authenticateToken, authorizeRoles, AuthRequest } from './auth';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 // --- STARTUP VALIDATION ---
 const requiredEnv = [

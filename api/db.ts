@@ -1,12 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 
-const sqlProxy = new Proxy(() => { }, {
-    get: (target, prop) => {
-        return getClient()[prop];
-    },
-    apply: (target, thisArg, argumentsList) => {
-        return getClient()(...argumentsList);
-    }
-});
+// Simple initialization for Vercel stability
+// The @neondatabase/serverless driver handles connection pools automatically
+const sql = neon(process.env.DATABASE_URL || '');
 
-export default sqlProxy as any;
+export default sql;
