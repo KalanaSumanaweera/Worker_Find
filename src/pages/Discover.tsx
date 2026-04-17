@@ -268,7 +268,7 @@ export default function Discover() {
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
-                className="absolute inset-x-0 bottom-0 bg-white rounded-t-[3rem] p-8 pb-12 shadow-2xl overflow-y-auto max-h-[90vh]"
+                className="absolute inset-x-0 bottom-0 bg-white rounded-t-[3rem] p-6 pb-12 shadow-2xl overflow-y-auto max-h-[90vh]"
               >
                 <div className="flex justify-between items-center mb-8">
                   <h2 className="text-2xl font-bold text-teal-950">Filters</h2>
@@ -431,12 +431,10 @@ export default function Discover() {
                       </div>
                     </div>
 
-                    <div className="flex justify-center items-center pt-6 border-t border-slate-50">
-                      {/* <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Hourly Rate</span>
-                        <span className="font-extrabold text-teal-950 text-xl">LKR {a.price.toLocaleString()}</span>
-                      </div> */}
-                      <button className="glass-button glass-button-accent !px-6 !py-[5px] !rounded-2xl shadow-xl shadow-teal-500/10 text-[15px]"><span className="hidden lg:inline text-[18px]">Contact Now</span></button>
+                    <div className="pt-6 border-t border-slate-50">
+                      <button className="w-full glass-button glass-button-accent !px-6 !py-[10px] !rounded-2xl shadow-xl shadow-teal-500/10 text-[15px] hover:scale-105 active:scale-95 transition-all">
+                        <span className="text-[16px] md:text-[18px]">Contact Professional</span>
+                      </button>
                     </div>
                   </Link>
                 </motion.div>

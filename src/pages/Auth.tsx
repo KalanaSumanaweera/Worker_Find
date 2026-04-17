@@ -201,10 +201,10 @@ export default function Auth() {
                             <div className="flex gap-4 w-full">
                                 <a
                                     href={`http://localhost:3003/api/auth/google?role=${formData.role}`}
-                                    className="flex-1 py-4 px-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-50 transition-all font-bold text-slate-700 shadow-sm"
+                                    className="flex-1 py-3.5 px-4 bg-white border border-slate-200 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 hover:bg-slate-50 transition-all font-bold text-slate-700 shadow-sm text-sm"
                                 >
                                     <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
-                                    Sign in with Google
+                                    <span>Sign in with Google</span>
                                 </a>
                             </div>
 

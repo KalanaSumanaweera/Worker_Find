@@ -1,13 +1,14 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Star, Search as SearchIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import React from 'react';
 
-function FloatingShape({ className, delay = 0, duration = 10 }) {
+function FloatingShape({ className, delay = 0, duration = 10, isMobile = false }) {
+  if (isMobile) return null;
   return (
     <motion.div
       animate={{
@@ -26,73 +27,9 @@ function FloatingShape({ className, delay = 0, duration = 10 }) {
   );
 }
 
-function FloatingCategory({
-  name,
-  slug,
-  icon,
-  initialPos,
-  delay = 0,
-  activeHoverId,
-  onHover
-}: any) {
-  const isHovered = activeHoverId === name;
-  const isSearchHovered = activeHoverId === 'search';
-  const isOtherHovered = activeHoverId && activeHoverId !== name && activeHoverId !== 'search';
 
-  // Calculate repulsion
-  const leftNum = parseInt(initialPos.left);
-  const topNum = parseInt(initialPos.top);
-  const reposDistance = 40;
-
-  let translateX = 0;
-  let translateY = 0;
-
-  if (isSearchHovered) {
-    translateX = leftNum < 50 ? -reposDistance : reposDistance;
-    translateY = topNum < 50 ? -reposDistance : reposDistance;
-  } else if (isOtherHovered) {
-    translateX = (leftNum < 50 ? -1 : 1) * 20;
-    translateY = (topNum < 50 ? -1 : 1) * 20;
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{
-        opacity: 1,
-        scale: isHovered ? 1.15 : 1,
-        y: isHovered ? 0 : [0, -20, 0, -10, 0],
-        x: isHovered ? 0 : [0, 10, -5, 10, 0],
-        translateX,
-        translateY,
-      }}
-      transition={{
-        y: { duration: 6 + delay, repeat: Infinity, ease: "easeInOut" },
-        x: { duration: 8 + delay * 0.5, repeat: Infinity, ease: "easeInOut" },
-        translateX: { duration: 0.5 },
-        translateY: { duration: 0.5 },
-        scale: { duration: 0.3, ease: "backOut" }
-      }}
-      onMouseEnter={() => onHover(name)}
-      onMouseLeave={() => onHover(null)}
-      whileHover={{
-        zIndex: 50,
-        backgroundColor: "rgba(255, 255, 255, 0.98)",
-        boxShadow: "0 25px 50px -12px rgba(13, 148, 136, 0.5)",
-        borderColor: "rgba(13, 148, 136, 0.5)",
-      }}
-      className={`absolute glass-card px-7 py-5 rounded-[2rem] flex items-center gap-3 cursor-pointer select-none whitespace-nowrap transition-all duration-300 border border-teal-500/10 backdrop-blur-2xl shadow-lg z-20 ${isHovered ? 'ring-2 ring-teal-500/20' : ''}`}
-      style={{ left: initialPos.left, top: initialPos.top }}
-    >
-      <Link to={`/discover?category=${slug}`} className="flex items-center gap-3">
-        <span className="material-symbols-outlined text-teal-600 text-3xl">{icon}</span>
-        <span className="font-bold text-teal-950 text-lg tracking-tight">{name}</span>
-      </Link>
-    </motion.div>
-  );
-}
-
-function FloatingReview({ text, author, rating, initialPos, delay = 0 }: any) {
+function FloatingReview({ text, author, rating, initialPos, delay = 0, isMobile = false }: any) {
+  if (isMobile) return null;
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -151,6 +88,14 @@ const fallbackCategories = [
 export default function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [categories, setCategories] = useState<{ id: number, name: string, icon: string, pos: any }[]>([]);
@@ -221,44 +166,31 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <main className="pt-20">
+      <main className="pt-0 lg:pt-20">
         <section className="relative min-h-[700px] md:min-h-[850px] flex flex-col items-center justify-center px-4 md:px-8 text-center overflow-hidden">
           {/* Background AntiGravity Elements */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <FloatingShape className="w-64 h-64 bg-teal-200 top-[10%] left-[5%]" delay={0} duration={12} />
-            <FloatingShape className="w-96 h-96 bg-blue-100 bottom-[10%] right-[5%]" delay={2} duration={15} />
-            <FloatingShape className="w-48 h-48 bg-teal-100 top-[20%] right-[15%]" delay={5} duration={10} />
+
+          {/* Background Shapes — Desktop Only */}
+          <div className="hidden lg:block absolute inset-0 z-0 pointer-events-none">
+            <FloatingShape className="w-64 h-64 bg-teal-200 top-[10%] left-[5%]" delay={0} duration={12} isMobile={isMobile} />
+            <FloatingShape className="w-96 h-96 bg-blue-100 bottom-[10%] right-[5%]" delay={2} duration={15} isMobile={isMobile} />
+            <FloatingShape className="w-48 h-48 bg-teal-100 top-[20%] right-[15%]" delay={5} duration={10} isMobile={isMobile} />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-teal-50/50 to-transparent opacity-60 blur-3xl -z-10" />
           </div>
 
-          {/* Orbital Categories — Desktop Only */}
-          <div className="hidden md:block">
-            {categories.map((cat, i) => (
-              <FloatingCategory
-                key={cat.id || cat.name}
-                name={cat.name}
-                slug={cat.slug}
-                icon={cat.icon}
-                initialPos={cat.pos}
-                delay={i}
-                activeHoverId={hoveredId}
-                onHover={setHoveredId}
-              />
-            ))}
-          </div>
 
-          <div className="max-w-4xl space-y-6 relative z-30">
+          <div className="max-w-4xl space-y-6 relative z-10">
             <motion.h1
-              initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={isMobile ? { opacity: 0, y: 30, filter: "blur(10px)" }: { opacity: 0, y: 30, filter: "blur(10px)" }}
+              animate={isMobile ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="text-4xl sm:text-5xl md:text-6xl font-bold font-['Plus_Jakarta_Sans'] text-teal-950 tracking-tight leading-[1.1] md:leading-[1.05]"
             >
               {t('hero_title')}
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0, y: 30, filter: "blur(5px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={isMobile ? { opacity: 0, y: 30, filter: "blur(5px)" } : { opacity: 0, y: 30, filter: "blur(5px)" }}
+              animate={isMobile ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
               className="text-base sm:text-lg md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed px-4 md:px-0"
             >
@@ -267,86 +199,74 @@ export default function Home() {
 
             <motion.form
               onSubmit={handleSearch}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMobile ? { opacity: 0, y: 40, filter: "blur(5px)" } : { opacity: 0, y: 40, filter: "blur(5px)" }}
+              animate={isMobile ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-              onMouseEnter={() => setHoveredId('search')}
-              onMouseLeave={() => setHoveredId(null)}
-              className="mt-8 md:mt-12 p-3 bg-white/70 backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-full shadow-[0_20px_50px_rgba(13,148,136,0.15)] max-w-4xl mx-auto flex flex-col md:flex-row items-stretch md:items-center gap-2 group hover:shadow-[0_20px_70px_rgba(13,148,136,0.25)] transition-all duration-500 mx-4"
+              onMouseEnter={() => !isMobile && setHoveredId('search')}
+              onMouseLeave={() => !isMobile && setHoveredId(null)}
+              className="mt-8 md:mt-12 p-2 md:p-3 bg-white/70 backdrop-blur-2xl border border-white/20 rounded-2xl md:rounded-full shadow-[0_20px_50px_rgba(13,148,136,0.15)] w-full max-w-xl md:max-w-4xl mx-auto flex items-center gap-1 group md:hover:shadow-[0_20px_70px_rgba(13,148,136,0.25)] transition-all duration-500 px-2 md:px-0"
             >
-              <div className="flex-1 relative">
+              <div className="flex-1 relative min-w-0">
                 <input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-6 py-4 bg-transparent focus:ring-0 text-base md:text-lg placeholder:text-slate-400 rounded-full"
-                  placeholder={t('search_placeholder')}
+                  className="w-full px-3 md:px-6 py-3 md:py-4 bg-transparent focus:ring-0 text-sm md:text-lg placeholder:text-slate-400 rounded-full"
+                  placeholder={isMobile ? "Search..." : t('search_placeholder')}
                 />
               </div>
               <div className="hidden md:block w-px h-8 bg-slate-200" />
-              <div className="flex-1 relative">
-                <input className="w-full px-6 py-4 bg-transparent focus:ring-0 text-base md:text-lg placeholder:text-slate-400 rounded-full" placeholder={t('location_placeholder')} />
+              <div className="flex-1 relative min-w-0 hidden sm:block">
+                <input className="w-full px-4 md:px-6 py-3 md:py-4 bg-transparent focus:ring-0 text-sm md:text-lg placeholder:text-slate-400 rounded-full" placeholder={isMobile ? "Location" : t('location_placeholder')} />
               </div>
               <button
                 type="submit"
-                className="glass-button w-full md:w-auto !text-lg !px-12 !py-4 !rounded-xl md:!rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-lg transform hover:scale-105 transition-all duration-300"
+                className="p-3 md:px-12 md:py-4 rounded-xl md:rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-lg md:transform md:hover:scale-105 transition-all duration-300 flex items-center justify-center shrink-0"
               >
-                {t('search')}
+                <SearchIcon size={20} className="md:hidden" />
+                <span className="hidden md:inline !text-lg">{t('search')}</span>
               </button>
             </motion.form>
 
-            <div className="mt-10 flex flex-wrap justify-center gap-6">
+            <div className="mt-8 md:mt-10 flex flex-row flex-wrap justify-center gap-3 md:gap-6 px-2">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
+                initial={isMobile ? { opacity: 1 } : { opacity: 0, y: 20 }}
+                animate={isMobile ? { opacity: 1 } : {
                   opacity: 1,
                   y: 0,
                   translateX: hoveredId === 'search' ? -40 : (hoveredId === 'all-workers' ? -30 : 0),
                   translateY: hoveredId === 'search' ? 30 : 0,
                 }}
-                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-                onMouseEnter={() => setHoveredId('all-categories')}
-                onMouseLeave={() => setHoveredId(null)}
-                className="relative"
+                transition={isMobile ? {} : { duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                onMouseEnter={() => !isMobile && setHoveredId('all-categories')}
+                onMouseLeave={() => !isMobile && setHoveredId(null)}
+                className="relative flex-1 md:flex-none"
               >
-                <Link to="/discover" className="glass-button glass-button-black !text-base !px-8 !py-4 flex items-center gap-2 shadow-2xl hover:scale-105 transition-all">
-                  <span className="material-symbols-outlined text-xl">grid_view</span>
-                  View All Categories
+                <Link to="/discover" className="glass-button glass-button-black !text-[13px] md:!text-base !px-4 md:!px-8 !py-3 md:!py-4 flex items-center justify-center gap-2 shadow-2xl hover:scale-105 transition-all w-full">
+                  <span className="material-symbols-outlined text-lg md:text-xl">grid_view</span>
+                  All Categories
                 </Link>
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{
+                initial={isMobile ? { opacity: 1 } : { opacity: 0, y: 20 }}
+                animate={isMobile ? { opacity: 1 } : {
                   opacity: 1,
                   y: 0,
                   translateX: hoveredId === 'search' ? 40 : (hoveredId === 'all-categories' ? 30 : 0),
                   translateY: hoveredId === 'search' ? 30 : 0,
                 }}
-                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-                onMouseEnter={() => setHoveredId('all-workers')}
-                onMouseLeave={() => setHoveredId(null)}
-                className="relative"
+                transition={isMobile ? {} : { duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                onMouseEnter={() => !isMobile && setHoveredId('all-workers')}
+                onMouseLeave={() => !isMobile && setHoveredId(null)}
+                className="relative flex-1 md:flex-none"
               >
-                <Link to="/discover" className="glass-button glass-button-black !text-base !px-8 !py-4 flex items-center gap-2 shadow-2xl hover:scale-105 transition-all">
-                  <span className="material-symbols-outlined text-xl">group</span>
-                  Find All Workers
+                <Link to="/discover" className="glass-button glass-button-black !text-[13px] md:!text-base !px-4 md:!px-8 !py-3 md:!py-4 flex items-center justify-center gap-2 shadow-2xl hover:scale-105 transition-all w-full">
+                  <span className="material-symbols-outlined text-lg md:text-xl">group</span>
+                  All Workers
                 </Link>
               </motion.div>
             </div>
 
-            {/* Mobile Category Chips */}
-            <div className="flex md:hidden gap-3 overflow-x-auto pb-4 mt-12 scrollbar-none snap-x px-4">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id || cat.name}
-                  to={`/discover?c=${cat.slug}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-white border border-slate-200 rounded-full text-sm font-bold text-teal-800 shadow-sm snap-start"
-                >
-                  <span className="material-symbols-outlined text-teal-600 text-lg">{cat.icon}</span>
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -370,18 +290,16 @@ export default function Home() {
                 rating={rev.rating}
                 initialPos={rev.pos}
                 delay={i}
+                isMobile={isMobile}
               />
             ))}
           </div>
 
           {/* Testimonials Grid — Mobile Only */}
           <div className="md:hidden grid grid-cols-1 gap-6 px-4">
-            {reviews.map((rev) => (
-              <motion.div
+            {reviews.length > 0 ? reviews.map((rev) => (
+              <div
                 key={rev.author}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 className="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-xl"
               >
                 <div className="flex gap-1 mb-4 text-amber-500">
@@ -399,8 +317,10 @@ export default function Home() {
                     <p className="text-teal-600/70 text-xs font-semibold">Verified Client</p>
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            )) : (
+              <p className="text-center text-slate-400 text-sm py-8">No reviews yet. Be the first to share your experience!</p>
+            )}
           </div>
 
           <div className="mt-12 text-center relative z-10">
