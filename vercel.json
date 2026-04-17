@@ -1,8 +1,9 @@
 {
+    "version": 2,
     "rewrites": [
         {
-            "source": "/api/workers/:id",
-            "destination": "/api/worker-details.ts"
+            "source": "/api/(.*)",
+            "destination": "/api/index.ts"
         },
         {
             "source": "/(.*)",
