@@ -154,13 +154,29 @@ app.get('/api/auth/me', authenticateToken as any, async (req: AuthRequest, res) 
 });
 
 // Health check/Diagnostics
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+    let dbStatus = 'missing';
+    let dbError = null;
+
+    if (process.env.DATABASE_URL) {
+        try {
+            await sql`SELECT 1`;
+            dbStatus = 'connected';
+        } catch (err: any) {
+            dbStatus = 'connection-failed';
+            dbError = err.message;
+        }
+    }
+
     res.json({
         status: 'ok',
-        database: process.env.DATABASE_URL ? 'configured' : 'missing',
+        database: dbStatus,
+        dbError,
         googleAuth: (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) ? 'configured' : 'missing',
         callbackUrl: process.env.CALLBACK_URL || 'missing',
-        nodeEnv: process.env.NODE_ENV
+        clientUrl: process.env.CLIENT_URL || 'missing',
+        nodeEnv: process.env.NODE_ENV,
+        vercelEnv: process.env.VERCEL_ENV || 'not-detected'
     });
 });
 
@@ -396,9 +412,12 @@ app.get('/api/workers', async (req, res) => {
 
         const workers = await (sql as any).query(queryStr);
         res.json(workers);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching workers:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({
+            error: 'Internal Server Error',
+            details: error.message
+        });
     }
 });
 
