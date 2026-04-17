@@ -148,9 +148,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         if (url === '/api/auth/google/callback') {
             const { code, state } = req.query;
-            if (!code) return res.status(400).json({ error: 'OAuth code missing' });
+            
+            if (!code) return res.status(400).json({ error: 'OAuth code missing from Google' });
+            if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+                return res.status(500).json({ error: 'Google Credentials not configured in Vercel' });
+            }
 
-            const { role } = JSON.parse(decodeURIComponent(state as string) || '{"role":"seeker"}');
+            let role = 'seeker';
+            try {
+                if (state) {
+                    const parsedState = JSON.parse(decodeURIComponent(state as string));
+                    role = parsedState.role || 'seeker';
+                }
+            } catch (e) {
+                console.warn('Failed to parse OAuth state, defaulting to seeker');
+            }
 
             // 1. Exchange code for token
             const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -165,34 +177,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 })
             });
 
+            if (!tokenRes.ok) {
+                const errorDetail = await tokenRes.text();
+                return res.status(500).json({ error: 'Google Token Exchange Failed', details: errorDetail });
+            }
+
             const tokens = await tokenRes.json();
-            if (tokens.error) return res.status(500).json({ error: 'Google Token Error', details: tokens });
 
             // 2. Get user profile
             const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
                 headers: { Authorization: `Bearer ${tokens.access_token}` }
             });
+
+            if (!userRes.ok) return res.status(500).json({ error: 'Failed to fetch user profile from Google' });
+            
             const googleUser = await userRes.json();
+            if (!googleUser.email) return res.status(500).json({ error: 'Google did not return an email' });
 
             // 3. Upsert user in DB
-            let users = await sql`SELECT * FROM users WHERE email = ${googleUser.email}`;
             let user;
-
-            if (users.length === 0) {
-                const newUser = await sql`
-                    INSERT INTO users (name, email, role)
-                    VALUES (${googleUser.name}, ${googleUser.email}, ${role})
-                    RETURNING id, name, email, role
-                `;
-                user = newUser[0];
-            } else {
-                user = { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role };
+            try {
+                const users = await sql`SELECT * FROM users WHERE email = ${googleUser.email}`;
+                if (users.length === 0) {
+                    const newUser = await sql`
+                        INSERT INTO users (name, email, role)
+                        VALUES (${googleUser.name || 'Google User'}, ${googleUser.email}, ${role})
+                        RETURNING id, name, email, role
+                    `;
+                    user = newUser[0];
+                } else {
+                    user = { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role };
+                }
+            } catch (dbError: any) {
+                return res.status(500).json({ error: 'Database error during Google Login', message: dbError.message });
             }
 
             // 4. Generate and redirect
             const token = generateToken(user);
             const clientUrl = process.env.CLIENT_URL || 'https://worker-find.vercel.app';
-            return res.redirect(302, `${clientUrl}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+            // Ensure no double slashes or missing slashes
+            const redirectBase = clientUrl.endsWith('/') ? clientUrl.slice(0, -1) : clientUrl;
+            return res.redirect(302, `${redirectBase}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
         }
 
         return res.status(404).json({ error: 'Route not found', url });
