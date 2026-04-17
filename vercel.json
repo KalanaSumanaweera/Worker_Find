@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/workers/:id",
-            "destination": "/api/workers/[id].ts"
+            "destination": "/api/worker-details.ts"
         },
         {
             "source": "/(.*)",
