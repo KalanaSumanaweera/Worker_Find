@@ -171,7 +171,7 @@ export default function WorkerProfile() {
             />
             <div className="flex flex-col justify-center p-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-teal-100">{worker.job.includes('Master') ? 'Master Provider' : 'Professional'}</span>
+                <span className="bg-teal-50 text-teal-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.2em] border border-teal-100">{worker.job?.includes('Master') ? 'Master Provider' : 'Professional'}</span>
                 <div className="flex items-center gap-1 text-amber-500 font-bold text-sm bg-amber-50 px-3 py-1 rounded-full">
                   <Star size={14} className="fill-amber-500" /> {Number(worker.rating).toFixed(1)}
                 </div>
