@@ -8,6 +8,21 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 dotenv.config();
 
+// --- STARTUP VALIDATION ---
+const requiredEnv = [
+    'DATABASE_URL',
+    'GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET',
+    'CALLBACK_URL',
+    'CLIENT_URL',
+    'JWT_SECRET'
+];
+
+const missingEnv = requiredEnv.filter(key => !process.env[key]);
+if (missingEnv.length > 0) {
+    console.error('CRITICAL: Missing required environment variables:', missingEnv.join(', '));
+}
+
 const app = express();
 const port = process.env.PORT || 3003;
 
@@ -136,6 +151,17 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user
 app.get('/api/auth/me', authenticateToken as any, async (req: AuthRequest, res) => {
     res.json({ user: req.user });
+});
+
+// Health check/Diagnostics
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        database: process.env.DATABASE_URL ? 'configured' : 'missing',
+        googleAuth: (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) ? 'configured' : 'missing',
+        callbackUrl: process.env.CALLBACK_URL || 'missing',
+        nodeEnv: process.env.NODE_ENV
+    });
 });
 
 // --- ADMIN ROUTES ---
