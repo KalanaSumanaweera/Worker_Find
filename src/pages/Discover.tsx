@@ -4,6 +4,7 @@ import { Star, MessageCircle, Phone, Search, X, ChevronDown, MapPin, SlidersHori
 import { Link, useSearchParams } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../utils/api';
 
 const locations = {
   "North Western": {
@@ -39,7 +40,7 @@ export default function Discover() {
 
   // Fetch categories on load
   useEffect(() => {
-    fetch('http://localhost:3003/api/categories')
+    fetch(`${API_BASE_URL}/api/categories`)
       .then(res => res.json())
       .then(data => setCategories(data))
       .catch(err => console.error('Error fetching categories:', err));
@@ -74,7 +75,7 @@ export default function Discover() {
           rating: minRating.toString()
         });
 
-        const response = await fetch(`http://localhost:3003/api/workers?${queryParams}`);
+        const response = await fetch(`${API_BASE_URL}/api/workers?${queryParams}`);
         const data = await response.json();
         setWorkers(Array.isArray(data) ? data : []);
       } catch (error) {

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { API_BASE_URL } from '../utils/api';
 
 export default function AdminWorkers() {
     const [workers, setWorkers] = useState<any[]>([]);
@@ -25,7 +26,7 @@ export default function AdminWorkers() {
 
     const fetchWorkers = async () => {
         try {
-            const response = await fetch('http://localhost:3003/api/admin/workers', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/workers`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -43,7 +44,7 @@ export default function AdminWorkers() {
 
     const handleUpdate = async (id: number, updates: any) => {
         try {
-            const response = await fetch(`http://localhost:3003/api/admin/workers/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/workers/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

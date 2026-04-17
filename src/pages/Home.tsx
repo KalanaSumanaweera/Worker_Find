@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { API_BASE_URL } from '../utils/api';
 
 function FloatingShape({ className, delay = 0, duration = 10, isMobile = false }) {
   if (isMobile) return null;
@@ -103,7 +104,7 @@ export default function Home() {
 
   useEffect(() => {
     // Fetch categories
-    fetch('http://localhost:3003/api/categories')
+    fetch(`${API_BASE_URL}/api/categories`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
@@ -132,7 +133,7 @@ export default function Home() {
       });
 
     // Fetch reviews/latest testimonials
-    fetch('http://localhost:3003/api/workers')
+    fetch(`${API_BASE_URL}/api/workers`)
       .then(res => res.json())
       .then(workers => {
         const someReviews = workers
@@ -181,7 +182,7 @@ export default function Home() {
 
           <div className="max-w-4xl space-y-6 relative z-10">
             <motion.h1
-              initial={isMobile ? { opacity: 0, y: 30, filter: "blur(10px)" }: { opacity: 0, y: 30, filter: "blur(10px)" }}
+              initial={isMobile ? { opacity: 0, y: 30, filter: "blur(10px)" } : { opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={isMobile ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="text-4xl sm:text-5xl md:text-6xl font-bold font-['Plus_Jakarta_Sans'] text-teal-950 tracking-tight leading-[1.1] md:leading-[1.05]"

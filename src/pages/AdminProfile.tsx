@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { UserPlus, Briefcase, MapPin, DollarSign, Image as ImageIcon, CheckCircle, Send, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import { API_BASE_URL } from '../utils/api';
 import Footer from '../components/Footer';
 
 export default function AdminProfile() {
@@ -18,7 +19,7 @@ export default function AdminProfile() {
     const [categories, setCategories] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:3003/api/categories')
+        fetch(`${API_BASE_URL}/api/categories`)
             .then(res => res.json())
             .then(data => setCategories(data))
             .catch(err => console.error('Error fetching categories:', err));
@@ -51,7 +52,7 @@ export default function AdminProfile() {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:3003/api/workers', {
+            const response = await fetch(`${API_BASE_URL}/api/workers`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

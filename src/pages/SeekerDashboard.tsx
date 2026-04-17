@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../utils/api';
 
 export default function SeekerDashboard() {
     const [posts, setPosts] = useState<any[]>([]);
@@ -23,7 +24,7 @@ export default function SeekerDashboard() {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('http://localhost:3003/api/seeker/posts', {
+            const response = await fetch(`${API_BASE_URL}/api/seeker/posts`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();

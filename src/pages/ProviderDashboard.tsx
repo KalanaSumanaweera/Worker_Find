@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { API_BASE_URL } from '../utils/api';
 
 export default function ProviderDashboard() {
     const [posts, setPosts] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function ProviderDashboard() {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('http://localhost:3003/api/provider/posts', {
+            const response = await fetch(`${API_BASE_URL}/api/provider/posts`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -48,7 +49,7 @@ export default function ProviderDashboard() {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://localhost:3003/api/provider/posts/${selectedPost.id}/respond`, {
+            const response = await fetch(`${API_BASE_URL}/api/provider/posts/${selectedPost.id}/respond`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

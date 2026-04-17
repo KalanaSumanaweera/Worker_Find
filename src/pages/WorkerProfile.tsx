@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Star, MessageCircle, Phone, CheckCircle, Mail, Home, Briefcase, Plus, Send, User, Loader2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
+import { API_BASE_URL } from '../utils/api';
 
 export default function WorkerProfile() {
   const { id } = useParams();
@@ -73,7 +74,7 @@ export default function WorkerProfile() {
 
   const fetchWorker = async () => {
     try {
-      const response = await fetch(`http://localhost:3003/api/workers/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/workers/${id}`);
       const data = await response.json();
       setWorker(data);
     } catch (error) {
@@ -90,7 +91,7 @@ export default function WorkerProfile() {
   const handleContactSubmit = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3003/api/contact', {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,7 +115,7 @@ export default function WorkerProfile() {
     if (!rating || !comment.trim()) return;
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:3003/api/reviews', {
+      const response = await fetch(`${API_BASE_URL}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

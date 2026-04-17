@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import { API_BASE_URL } from '../utils/api';
 
 export default function AdminPosts() {
     const [posts, setPosts] = useState<any[]>([]);
@@ -24,7 +25,7 @@ export default function AdminPosts() {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('http://localhost:3003/api/admin/posts', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/posts`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -42,7 +43,7 @@ export default function AdminPosts() {
 
     const handleUpdate = async (id: number, updates: any) => {
         try {
-            const response = await fetch(`http://localhost:3003/api/admin/posts/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/admin/posts/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
