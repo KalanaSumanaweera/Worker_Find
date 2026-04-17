@@ -410,7 +410,7 @@ app.get('/api/workers', async (req, res) => {
 
         queryStr += ' ORDER BY w.created_at DESC';
 
-        const workers = await (sql as any).query(queryStr);
+        const workers = await sql.unsafe(queryStr);
         res.json(workers);
     } catch (error: any) {
         console.error('Error fetching workers:', error);
