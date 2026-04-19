@@ -17,7 +17,7 @@ export default function Auth() {
         role: 'seeker'
     });
 
-    const { login } = useAuth();
+    const { user: authUser, login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
@@ -31,12 +31,18 @@ export default function Auth() {
             try {
                 const user = JSON.parse(decodeURIComponent(userData));
                 login(user, token);
-                navigate(from, { replace: true });
+                navigate(from === '/auth' ? '/' : from, { replace: true });
             } catch (err) {
                 console.error('Failed to parse Google user data', err);
             }
         }
     }, [searchParams, login, navigate, from]);
+
+    useEffect(() => {
+        if (authUser && !searchParams.get('token')) {
+            navigate(from === '/auth' ? '/' : from, { replace: true });
+        }
+    }, [authUser, navigate, from, searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

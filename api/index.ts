@@ -41,22 +41,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         // --- PUBLIC TOOLS ---
-        if (url.includes('/api/debug')) {
-            const hash = await bcrypt.hash('test', 10);
-            return res.json({
-                received_url: url,
-                original_url: req.url,
-                method: rawMethod,
-                headers: req.headers,
-                lib_test: { bcrypt: !!hash, jwt: !!jwt.sign },
-                env_check: {
-                    has_db: !!process.env.DATABASE_URL,
-                    has_google: !!process.env.GOOGLE_CLIENT_ID,
-                    node_version: process.version
-                }
-            });
-        }
-
         if (url === '/api/health' || url.includes('/health')) {
             await sql`SELECT 1`;
             return res.json({ status: 'ok', database: 'connected' });
@@ -164,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         if (url === '/api/auth/google/callback') {
             const { code, state, debug } = req.query;
-            
+
             try {
                 if (!code) return res.status(400).json({ error: 'OAuth code missing from Google' });
                 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -207,7 +191,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 });
 
                 if (!userRes.ok) return res.status(500).json({ error: 'Failed to fetch user profile from Google' });
-                
+
                 const googleUser = await userRes.json();
                 if (!googleUser.email) return res.status(500).json({ error: 'Google did not return an email' });
 
@@ -227,17 +211,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
                 // 4. Generate and send
                 const token = generateToken(user);
-                
-                if (debug === 'true') {
-                    return res.json({ message: 'Success', user, token, client_url: process.env.CLIENT_URL });
-                }
 
                 const clientUrl = process.env.CLIENT_URL || 'https://worker-find.vercel.app';
                 const redirectBase = clientUrl.endsWith('/') ? clientUrl.slice(0, -1) : clientUrl;
                 return res.redirect(302, `${redirectBase}/auth?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
             } catch (callbackError: any) {
-                return res.status(500).json({ 
-                    error: 'Uncaught error in OAuth callback', 
+                return res.status(500).json({
+                    error: 'Uncaught error in OAuth callback',
                     message: callbackError.message,
                     stack: callbackError.stack ? 'present' : 'absent'
                 });
